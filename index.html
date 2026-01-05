@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ARO</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="shortcut icon" href="srdce.png" type="image/x-icon">
+	<style>
+		body form i.fa-house-medical {
+			font-size: 28px;
+			color: red;
+		}
+
+		body form i.fa-truck-medical {
+			font-size: 28px;
+			color: darkblue;
+		}
+
+		body form i.fa-bed-pulse {
+			font-size: 28px;
+		}
+
+		body form .chyba {
+		color: red;
+		font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+		<form method="post">
+		<br>
+		<i class="fa-solid fa-truck-medical"></i>
+		<i class='fa-solid fa-house-medical'></i>
+		<i class="fa-solid fa-bed-pulse"></i>
+		<br><br><br>
+			Váha pacienta: <input type="number" name="vaha"> [kilogramy]<br><br>
+
+			Dávkování léku:
+			<select name="davkovaniLeku">
+				<option value="">vyberte</option>
+			</select> [ml za hod na vahu pac.]<br><br>
+
+			Koncentrace léku - lék:
+			<select name="koncentraceLeku">
+				<option value="">vyberte</option>
+				<option>1</option>
+				<option>5</option>
+				<option>10</option>
+				<option>25</option>
+				<option>50</option>
+			</select> [miligramy]<br><br>
+			
+			Koncentrace léku - médium:
+			<select name="mnozstviMedia">
+				<option value="">vyberte</option>
+				<option>50</option>
+				<option>100</option>
+				<option>150</option>
+				<option>200</option>
+				<option>250</option>		
+			</select> [mililitry]<br><br>
+
+			<div class="chyba">
+			</div><br>
+
+			<button>Přepočítat <i class="fa-solid fa-arrow-right"></i></button>
+	</form><br>
+
+	<h3> Přepočet:<span id="result"></span></h3>
+
+	<script>
+
+		// predefined choices for dosing
+		const parent = document.querySelector("select[name=davkovaniLeku]");
+		for(let cislo=1; cislo<=50; cislo++) {
+			const newOption = document.createElement("option");
+			newOption.text = cislo;
+			parent.appendChild(newOption);
+		};
+
+		// form processing
+		document.querySelector("button").addEventListener("click", (e) => {
+			e.preventDefault();
+			const vaha = Number(document.querySelector("input[name=vaha]").value);
+			const davkovaniLeku = Number(document.querySelector("select[name=davkovaniLeku]").value);
+			const koncentraceLeku = Number(document.querySelector("select[name=koncentraceLeku]").value);
+			const mnozstviMedia = Number(document.querySelector("select[name=mnozstviMedia]").value);
+
+			if(
+				vaha > 0
+				&& davkovaniLeku > 0
+				&& koncentraceLeku > 0
+				&& mnozstviMedia > 0
+			){
+				// clear error message
+				document.querySelector(".chyba").innerText = "";
+
+				// display result
+				const result1 = koncentraceLeku / mnozstviMedia;
+				const result2 = davkovaniLeku * result1 / 60;
+				const finalResult = (result2 * 1000 / vaha).toLocaleString('cs-CZ', {maximumFractionDigits: 5});
+				document.querySelector("#result").innerHTML = ` ${finalResult}`;  // `mikrogramů za minutu na 1 kg pacientovi vahy ${vaha} kg`
+			}else{
+				// clear result
+				document.querySelector("#result").innerHTML = "";
+
+				// display error message
+				if(vaha <= 0){
+					document.querySelector(".chyba").innerText = "Váha pacienta je špatně!";
+				}else{
+					document.querySelector(".chyba").innerText = "Prosím, vyplňte všechna pole!";
+				}
+			};
+		});
+
+	</script>
+</body>
+</html>
